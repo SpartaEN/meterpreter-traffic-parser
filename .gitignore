@@ -1,0 +1,4 @@
+# Build files
+*.egg-info
+dist
+build

@@ -11,7 +11,15 @@ class TLVUnit:
         self.data_type = int.from_bytes(self.data_header[4:8], ENDIAN)
         self.data_payload = data[8:self.data_length]
         if self.data_type & PacketMetaType.TLV_META_TYPE_COMPRESSED.value == PacketMetaType.TLV_META_TYPE_COMPRESSED.value:
-            self.data_payload = zlib.decompress(self.data_payload)
+            # Meterpreter prepends 4 bytes (original uncompressed length) before the compressed data
+            expected_length = int.from_bytes(self.data_payload[0:4], ENDIAN)
+            compressed_data = self.data_payload[4:]
+            # Meterpreter uses raw DEFLATE compression, so we need to specify wbits=-15
+            self.data_payload = zlib.decompress(compressed_data, wbits=-15)
+            if len(self.data_payload) != expected_length:
+                raise ValueError(
+                    f"Decompressed size mismatch: expected {expected_length}, got {len(self.data_payload)}"
+                )
             self.data_type = self.data_type ^ PacketMetaType.TLV_META_TYPE_COMPRESSED.value
 
     def get_data(self):

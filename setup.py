@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="meterpreter-traffic-parser",
-    version="0.0.1",
+    version="0.0.3",
     author="SpartaEN",
     author_email="nya@sparta-en.org",
     description="Meterpreter traffic parser",
